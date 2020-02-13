@@ -5,7 +5,7 @@ const api = require('./utils/api.js')
 const generateMarkdown = require('./utils/generateMarkdown.js')
 
 const writeToFile = (fileName, data) => {
-  fs.writeFile(fileName, data, error => error ? console.error(error) : console.log(`${fileName} generated!`))
+  fs.writeFile(fileName + '.md', data, error => error ? console.error(error) : console.log(`${fileName + '.md'} generated!`))
 }
 
 const init = async _ => {
@@ -73,20 +73,7 @@ const init = async _ => {
       message: 'Any questions?'
     }
   ]))
-  // Object.assign(rmObject, ghApi)
-  writeToFile('test.md', await generateMarkdown(rmObject))
-  // At least one badge
-  // Project title
-  // Description
-  // Table of Contents
-  // Installation
-  // Usage
-  // License
-  // Contributing
-  // Tests
-  // Questions
-  // User GitHub profile picture
-  // User GitHub email
+  writeToFile(rmObject.title, await generateMarkdown(rmObject))
 }
 
 init()
