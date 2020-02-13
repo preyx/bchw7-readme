@@ -5,26 +5,88 @@ const api = require('./utils/api.js')
 const generateMarkdown = require('./utils/generateMarkdown.js')
 
 const writeToFile = (fileName, data) => {
+  fs.writeFile(fileName, data, error => error ? console.error(error) : console.log(`${fileName} generated!`))
 }
 
 const init = async _ => {
-  const { username } = await prompt([
-    {
-      type: 'input',
-      name: 'username',
-      message: 'What is your GitHub user name?'
+  let rmObject = {}
+  do {
+    const { rmUser, rmRepo } = await prompt([
+      {
+        type: 'input',
+        name: 'rmUser',
+        message: 'What is your GitHub user name?'
+      },
+      {
+        type: 'input',
+        name: 'rmRepo',
+        message: 'What is your repository name?'
+      }
+    ])
+    rmObject = await api.getUser(rmUser, rmRepo)
+    if (!rmObject) {
+      console.error('Repo not found!')
+    } else {
+      console.log(`${rmObject.fullName} found!`)
     }
-  ])
-  const apiResult = await api.getUser(username)
-  const {} = await prompt([
+  } while (!rmObject)
+  // const ghApi = await api.getUser(rmUser)
+  Object.assign(rmObject, await prompt([
+    // {
+    //   type: 'input',
+    //   name: 'rmTitle',
+    //   message: 'What is the project title?'
+    // },
+    // {
+    //   type: 'input',
+    //   name: 'rmDesc',
+    //   message: 'What is the project description?'
+    // },
     {
       type: 'input',
-      name: 'username',
-      message: 'What is your GitHub user name?'
+      name: 'inst',
+      message: 'What are the installation instructions?'
     },
-  ])
-    .then(({ username }) => getUser(username))
-    .catch(e => console.error(e))
+    {
+      type: 'input',
+      name: 'use',
+      message: 'What is the usage description?'
+    },
+    // {
+    //   type: 'input',
+    //   name: 'rmLic',
+    //   message: 'What is the license?'
+    // },
+    {
+      type: 'input',
+      name: 'con',
+      message: 'Who are the contributors?'
+    },
+    {
+      type: 'input',
+      name: 'test',
+      message: 'What are the tests?'
+    },
+    {
+      type: 'input',
+      name: 'qs',
+      message: 'Any questions?'
+    }
+  ]))
+  // Object.assign(rmObject, ghApi)
+  writeToFile('test.md', await generateMarkdown(rmObject))
+  // At least one badge
+  // Project title
+  // Description
+  // Table of Contents
+  // Installation
+  // Usage
+  // License
+  // Contributing
+  // Tests
+  // Questions
+  // User GitHub profile picture
+  // User GitHub email
 }
 
 init()
